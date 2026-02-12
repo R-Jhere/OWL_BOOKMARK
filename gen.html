@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owl Bookmarks Icon Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: #0f172a;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+    h1 {
+      color: #fbbf24;
+    }
+    .icon-preview {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 12px;
+      border: 2px solid #d97706;
+    }
+    .icon-box {
+      text-align: center;
+    }
+    canvas {
+      border: 2px solid #334155;
+      border-radius: 8px;
+      background: white;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+    }
+    .instructions {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 8px;
+      border: 2px solid #334155;
+      max-width: 600px;
+    }
+    .instructions h2 {
+      color: #fbbf24;
+      margin-bottom: 15px;
+    }
+    .instructions ol {
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <h1>🦉 Owl Bookmarks Icon Generator</h1>
+  
+  <div class="icon-preview">
+    <div class="icon-box">
+      <h3>16x16</h3>
+      <canvas id="canvas16" width="16" height="16"></canvas>
+      <br>
+      <button onclick="downloadIcon(16)">Download icon16.png</button>
+    </div>
+    
+    <div class="icon-box">
+      <h3>48x48</h3>
+      <canvas id="canvas48" width="48" height="48"></canvas>
+      <br>
+      <button onclick="downloadIcon(48)">Download icon48.png</button>
+    </div>
+    
+    <div class="icon-box">
+      <h3>128x128</h3>
+      <canvas id="canvas128" width="128" height="128"></canvas>
+      <br>
+      <button onclick="downloadIcon(128)">Download icon128.png</button>
+    </div>
+  </div>
+
+  <div class="instructions">
+    <h2>Instructions:</h2>
+    <ol>
+      <li>Click each "Download" button to save the PNG icons</li>
+      <li>Save them as <code>icon16.png</code>, <code>icon48.png</code>, and <code>icon128.png</code></li>
+      <li>Place all three icons in the <code>icons</code> folder of your extension</li>
+      <li>Load the extension in Chrome</li>
+    </ol>
+  </div>
+
+  <script>
+    function drawOwl(ctx, size) {
+      const scale = size / 200;
+      ctx.scale(scale, scale);
+      
+      // Body gradient
+      const bodyGrad = ctx.createLinearGradient(0, 50, 0, 180);
+      bodyGrad.addColorStop(0, '#f59e0b');
+      bodyGrad.addColorStop(1, '#d97706');
+      
+      const bellyGrad = ctx.createLinearGradient(0, 90, 0, 170);
+      bellyGrad.addColorStop(0, '#fef3c7');
+      bellyGrad.addColorStop(1, '#fde68a');
+      
+      // Body
+      ctx.fillStyle = bodyGrad;
+      ctx.beginPath();
+      ctx.ellipse(100, 115, 50, 60, 0, 0, Math.PI * 2);
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 3;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      
+      // Belly
+      ctx.fillStyle = bellyGrad;
+      ctx.beginPath();
+      ctx.ellipse(100, 130, 32, 40, 0, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Wings
+      ctx.fillStyle = '#b45309';
+      ctx.globalAlpha = 0.8;
+      ctx.save();
+      ctx.translate(60, 120);
+      ctx.rotate(-0.35);
+      ctx.ellipse(0, 0, 18, 35, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      
+      ctx.save();
+      ctx.translate(140, 120);
+      ctx.rotate(0.35);
+      ctx.ellipse(0, 0, 18, 35, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      
+      // Head
+      ctx.fillStyle = bodyGrad;
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 3;
+      ctx.beginPath();
+      ctx.arc(100, 75, 42, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      
+      // Ear tufts
+      ctx.fillStyle = '#b45309';
+      ctx.save();
+      ctx.translate(70, 42);
+      ctx.rotate(-0.44);
+      ctx.ellipse(0, 0, 8, 18, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      
+      ctx.save();
+      ctx.translate(130, 42);
+      ctx.rotate(0.44);
+      ctx.ellipse(0, 0, 8, 18, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      
+      // Face discs
+      ctx.fillStyle = '#fef3c7';
+      ctx.globalAlpha = 0.5;
+      ctx.beginPath();
+      ctx.arc(80, 75, 28, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(120, 75, 28, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      
+      // Eyes
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(80, 75, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.arc(120, 75, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      
+      // Iris
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(80, 75, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(120, 75, 12, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Pupils
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.arc(80, 75, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(120, 75, 8, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Highlights
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.9;
+      ctx.beginPath();
+      ctx.arc(82, 73, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(122, 73, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      
+      // Beak
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.moveTo(100, 88);
+      ctx.quadraticCurveTo(93, 90, 93, 95);
+      ctx.lineTo(100, 98);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.moveTo(100, 88);
+      ctx.quadraticCurveTo(107, 90, 107, 95);
+      ctx.lineTo(100, 98);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.moveTo(96, 95);
+      ctx.lineTo(100, 102);
+      ctx.lineTo(104, 95);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(93, 95);
+      ctx.lineTo(100, 102);
+      ctx.lineTo(107, 95);
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+      
+      // Feet
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.ellipse(85, 172, 10, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(115, 172, 10, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Toes
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(80, 175);
+      ctx.lineTo(78, 182);
+      ctx.moveTo(85, 175);
+      ctx.lineTo(85, 183);
+      ctx.moveTo(90, 175);
+      ctx.lineTo(92, 182);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(110, 175);
+      ctx.lineTo(108, 182);
+      ctx.moveTo(115, 175);
+      ctx.lineTo(115, 183);
+      ctx.moveTo(120, 175);
+      ctx.lineTo(122, 182);
+      ctx.stroke();
+      
+      // Eyebrows
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 2.5;
+      ctx.globalAlpha = 0.6;
+      ctx.beginPath();
+      ctx.moveTo(65, 60);
+      ctx.quadraticCurveTo(73, 56, 82, 58);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(135, 60);
+      ctx.quadraticCurveTo(127, 56, 118, 58);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    
+    function generateIcons() {
+      [16, 48, 128].forEach(size => {
+        const canvas = document.getElementById(`canvas${size}`);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, size, size);
+        ctx.save();
+        drawOwl(ctx, size);
+        ctx.restore();
+      });
+    }
+    
+    function downloadIcon(size) {
+      const canvas = document.getElementById(`canvas${size}`);
+      const link = document.createElement('a');
+      link.download = `icon${size}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+    
+    // Generate icons on load
+    generateIcons();
+  </script>25, 55, 30);
+      ctx.quadraticCurveTo(62, 40, 65, 45);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.moveTo(135, 35);
+      ctx.quadraticCurveTo(140, 25, 145, 30);
+      ctx.quadraticCurveTo(138, 40, 135, 45);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Facial disc
+      ctx.fillStyle = '#fde68a';
+      ctx.globalAlpha = 0.6;
+      ctx.beginPath();
+      ctx.ellipse(75, 70, 25, 30, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(125, 70, 25, 30, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      
+      // Eyes
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(75, 70, 20, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.arc(125, 70, 20, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      
+      // Iris
+      ctx.fillStyle = '#fbbf24';
+      ctx.globalAlpha = 0.3;
+      ctx.beginPath();
+      ctx.arc(75, 70, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(125, 70, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      
+      // Pupils
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.arc(75, 70, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(125, 70, 7, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Pupil highlights
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(77, 68, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(127, 68, 3, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Beak
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.ellipse(100, 85, 8, 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#d97706';
+      ctx.beginPath();
+      ctx.moveTo(97, 85);
+      ctx.lineTo(100, 92);
+      ctx.lineTo(103, 85);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Feet
+      ctx.fillStyle = '#d97706';
+      ctx.beginPath();
+      ctx.ellipse(80, 170, 12, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(120, 170, 12, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Toes
+      ctx.strokeStyle = '#92400e';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(75, 175);
+      ctx.lineTo(73, 182);
+      ctx.moveTo(80, 175);
+      ctx.lineTo(80, 182);
+      ctx.moveTo(85, 175);
+      ctx.lineTo(87, 182);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(115, 175);
+      ctx.lineTo(113, 182);
+      ctx.moveTo(120, 175);
+      ctx.lineTo(120, 182);
+      ctx.moveTo(125, 175);
+      ctx.lineTo(127, 182);
+      ctx.stroke();
+    }
+    
+    function generateIcons() {
+      [16, 48, 128].forEach(size => {
+        const canvas = document.getElementById(`canvas${size}`);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, size, size);
+        ctx.save();
+        drawOwl(ctx, size);
+        ctx.restore();
+      });
+    }
+    
+    function downloadIcon(size) {
+      const canvas = document.getElementById(`canvas${size}`);
+      const link = document.createElement('a');
+      link.download = `icon${size}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+    
+    // Generate icons on load
+    generateIcons();
+  </script>}
+    
+    function generateIcons() {
+      [16, 48, 128].forEach(size => {
+        const canvas = document.getElementById(`canvas${size}`);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, size, size);
+        ctx.save();
+        drawOwl(ctx, size);
+        ctx.restore();
+      });
+    }
+    
+    function downloadIcon(size) {
+      const canvas = document.getElementById(`canvas${size}`);
+      const link = document.createElement('a');
+      link.download = `icon${size}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+    
+    // Generate icons on load
+    generateIcons();
+  </script>
+</body>
+</html>

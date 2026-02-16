@@ -1,16 +1,19 @@
 // Context menu integration
 chrome.runtime.onInstalled.addListener(() => {
-  // Create context menu
-  chrome.contextMenus.create({
-    id: 'saveToOwlBookmarks',
-    title: 'Save to Owl Bookmarks',
-    contexts: ['page', 'link']
-  });
-  
-  chrome.contextMenus.create({
-    id: 'saveToOwlBookmarksLink',
-    title: 'Save Link to Owl Bookmarks',
-    contexts: ['link']
+  // clear existing context menus to avoid duplicate id errors
+  chrome.contextMenus.removeAll(() => {
+    // Create context menu
+    chrome.contextMenus.create({
+      id: 'saveToOwlBookmarks',
+      title: 'Save to Owl Bookmarks',
+      contexts: ['page', 'link']
+    });
+
+    chrome.contextMenus.create({
+      id: 'saveToOwlBookmarksLink',
+      title: 'Save Link to Owl Bookmarks',
+      contexts: ['link']
+    });
   });
 });
 
@@ -30,7 +33,7 @@ async function saveBookmark(title, url) {
   const result = await chrome.storage.sync.get(['bookmarks', 'folders']);
   const bookmarks = result.bookmarks || [];
   const folders = result.folders || ['default'];
-  
+
   // Check if bookmark already exists
   const exists = bookmarks.some(b => b.url === url);
   if (exists) {
@@ -42,7 +45,7 @@ async function saveBookmark(title, url) {
     });
     return;
   }
-  
+
   const bookmark = {
     id: Date.now().toString(),
     title: title,
@@ -51,10 +54,10 @@ async function saveBookmark(title, url) {
     favicon: `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`,
     createdAt: new Date().toISOString()
   };
-  
+
   bookmarks.push(bookmark);
   await chrome.storage.sync.set({ bookmarks });
-  
+
   // Show notification
   chrome.notifications.create({
     type: 'basic',

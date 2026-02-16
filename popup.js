@@ -4,16 +4,16 @@ document.addEventListener('mousemove', (e) => {
   const rect = owl.getBoundingClientRect();
   const owlX = rect.left + rect.width / 2;
   const owlY = rect.top + rect.height / 2;
-  
+
   const angle = Math.atan2(e.clientY - owlY, e.clientX - owlX);
   const distance = Math.min(5, Math.sqrt(Math.pow(e.clientX - owlX, 2) + Math.pow(e.clientY - owlY, 2)) / 25);
-  
+
   const x = Math.cos(angle) * distance;
   const y = Math.sin(angle) * distance;
-  
+
   const leftPupil = document.getElementById('leftPupil');
   const rightPupil = document.getElementById('rightPupil');
-  
+
   if (leftPupil) {
     leftPupil.style.transform = `translate(${x}px, ${y}px)`;
   }
@@ -57,11 +57,11 @@ function setupEventListeners() {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      
+
       btn.classList.add('active');
       const screenId = btn.dataset.screen + 'Screen';
       document.getElementById(screenId).classList.add('active');
-      
+
       if (btn.dataset.screen === 'view') {
         renderBookmarks();
       } else if (btn.dataset.screen === 'folders') {
@@ -76,7 +76,7 @@ function setupEventListeners() {
     const title = document.getElementById('bookmarkTitle').value;
     const url = document.getElementById('bookmarkUrl').value;
     const folder = document.getElementById('bookmarkFolder').value;
-    
+
     const bookmark = {
       id: Date.now().toString(),
       title,
@@ -85,10 +85,10 @@ function setupEventListeners() {
       favicon: `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`,
       createdAt: new Date().toISOString()
     };
-    
+
     bookmarks.push(bookmark);
     await saveData();
-    
+
     showSuccess('Bookmark saved successfully! 🎉');
     document.getElementById('addBookmarkForm').reset();
     updateFolderSelects();
@@ -121,7 +121,7 @@ function setupEventListeners() {
   document.getElementById('saveFolderBtn').addEventListener('click', async () => {
     const name = document.getElementById('folderNameInput').value.trim();
     if (!name) return;
-    
+
     if (editingFolderId !== null) {
       const oldName = folders[editingFolderId];
       folders[editingFolderId] = name;
@@ -132,7 +132,7 @@ function setupEventListeners() {
     } else {
       folders.push(name);
     }
-    
+
     await saveData();
     updateFolderSelects();
     renderFolders();
@@ -166,7 +166,7 @@ function setupEventListeners() {
   document.getElementById('importFileInput').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
@@ -242,12 +242,12 @@ function updateFolderSelects() {
 function updateFolderTabs() {
   const container = document.getElementById('folderTabs');
   const allTab = '<div class="folder-tab active" data-folder="all">All</div>';
-  const folderTabs = folders.map(f => 
+  const folderTabs = folders.map(f =>
     `<div class="folder-tab" data-folder="${f}">${f}</div>`
   ).join('');
-  
+
   container.innerHTML = allTab + folderTabs;
-  
+
   container.querySelectorAll('.folder-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       container.querySelectorAll('.folder-tab').forEach(t => t.classList.remove('active'));
@@ -262,21 +262,21 @@ function updateFolderTabs() {
 function renderBookmarks(searchQuery = '') {
   const grid = document.getElementById('bookmarksGrid');
   let filtered = bookmarks;
-  
+
   // Filter by folder
   if (currentFolder !== 'all') {
     filtered = filtered.filter(b => b.folder === currentFolder);
   }
-  
+
   // Filter by search
   if (searchQuery) {
     const query = searchQuery.toLowerCase();
-    filtered = filtered.filter(b => 
-      b.title.toLowerCase().includes(query) || 
+    filtered = filtered.filter(b =>
+      b.title.toLowerCase().includes(query) ||
       b.url.toLowerCase().includes(query)
     );
   }
-  
+
   if (filtered.length === 0) {
     grid.innerHTML = `
       <div class="empty-state">
@@ -287,11 +287,11 @@ function renderBookmarks(searchQuery = '') {
     document.getElementById('bulkActions').style.display = 'none';
     return;
   }
-  
+
   grid.innerHTML = filtered.map(bookmark => `
     <div class="bookmark-card ${selectedBookmarks.has(bookmark.id) ? 'selected' : ''}" data-id="${bookmark.id}">
       <div class="bookmark-favicon">
-        <img src="${bookmark.favicon}" width="24" height="24" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2218%22 font-size=%2218%22>🔖</text></svg>'">
+        <img src="${bookmark.favicon}" class="favicon-img" width="24" height="24">
       </div>
       <div class="bookmark-title" title="${bookmark.title}">${bookmark.title}</div>
       <div class="bookmark-url" title="${bookmark.url}">${new URL(bookmark.url).hostname}</div>
@@ -302,7 +302,14 @@ function renderBookmarks(searchQuery = '') {
       </div>
     </div>
   `).join('');
-  
+
+  // Add error handlers for favicons (fixes CSP violation)
+  grid.querySelectorAll('.favicon-img').forEach(img => {
+    img.addEventListener('error', () => {
+      img.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2218%22 font-size=%2218%22>🔖</text></svg>';
+    });
+  });
+
   // Event listeners for cards
   grid.querySelectorAll('.open-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -311,28 +318,28 @@ function renderBookmarks(searchQuery = '') {
       chrome.tabs.create({ url: bookmark.url });
     });
   });
-  
+
   grid.querySelectorAll('.select-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleSelection(btn.dataset.id);
     });
   });
-  
+
   grid.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       deleteBookmark(btn.dataset.id);
     });
   });
-  
+
   grid.querySelectorAll('.bookmark-card').forEach(card => {
     card.addEventListener('click', () => {
       const bookmark = bookmarks.find(b => b.id === card.dataset.id);
       chrome.tabs.create({ url: bookmark.url });
     });
   });
-  
+
   // Update bulk actions visibility
   if (selectedBookmarks.size > 0) {
     document.getElementById('bulkActions').style.display = 'block';
@@ -368,11 +375,11 @@ function deleteBookmark(id) {
 // Render folders
 function renderFolders() {
   const container = document.getElementById('foldersList');
-  
+
   const folderItems = folders.map((folder, index) => {
     const count = bookmarks.filter(b => b.folder === folder).length;
     const isDefault = folder === 'default';
-    
+
     return `
       <div class="folder-item">
         <span class="folder-icon">📁</span>
@@ -389,9 +396,9 @@ function renderFolders() {
       </div>
     `;
   }).join('');
-  
+
   container.innerHTML = folderItems;
-  
+
   // Rename folder
   container.querySelectorAll('.rename-folder-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -402,14 +409,14 @@ function renderFolders() {
       document.getElementById('folderModal').classList.add('active');
     });
   });
-  
+
   // Delete folder
   container.querySelectorAll('.delete-folder-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const index = parseInt(btn.dataset.index);
       const folderName = folders[index];
       const count = bookmarks.filter(b => b.folder === folderName).length;
-      
+
       showConfirm(
         'Delete Folder',
         `Delete "${folderName}"? ${count > 0 ? `${count} bookmark(s) will be moved to Default.` : ''}`,
@@ -418,7 +425,7 @@ function renderFolders() {
           bookmarks.forEach(b => {
             if (b.folder === folderName) b.folder = 'default';
           });
-          
+
           folders.splice(index, 1);
           await saveData();
           updateUI();
